@@ -29,6 +29,9 @@ def map_word_frequency(document):
 
 
 def get_cosine_similarity(feature_vec_1, feature_vec_2):
+    if np.isnan(feature_vec_1[0]) or np.isnan(feature_vec_2[0]):
+        return 0
+
     return cosine_similarity(
         feature_vec_1.reshape(1, -1), feature_vec_2.reshape(1, -1)
     )[0][0]

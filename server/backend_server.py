@@ -1,13 +1,28 @@
 from flask import Flask, jsonify, request
 from argparse import ArgumentParser
+import re
+import numpy as np
 
 from utils.scopus_utils import ScopusScienceTopicSearch
 from utils.web_parsers.scopus_topics_parser import ScopusScienceTopicRelevance
+from utils.web_parsers.scopus_person_parser import ScopusPersonInformation
+from utils.web_parsers.scopus_person_parser import useful_person_for_subjects
+from utils.hh_database_toolkit import HHDatabase
 
 app = Flask(__name__)
 
 scopus_topics_estimator = ScopusScienceTopicSearch()
 scopus_papers_count_estimator = ScopusScienceTopicRelevance()
+scopus_person_subjects_estimator = ScopusPersonInformation()
+hh_database = HHDatabase(threshold=0.4)
+
+avg_rostov_salary = 44000
+
+degree_map = {
+    'нет': 0,
+    'кандидат наук': 1,
+    'доктор наук': 2,
+}
 
 
 @app.route('/api/compute', methods=['POST'])
@@ -19,13 +34,18 @@ def server_inference():
         'program_name': str,
         'competencies: [list of strings],
         'maker': str with Full name if program maker,
+        'maker_science_degree': str, choose from `нет`, `кандидат наук`, `доктор наук`
         'university': str, choose from `SFEDU`, `DSTU` (experimental feature)
     }
     Returns:
         Json in follow format:
         {
-            'scientific_activity': rate of science activity
+            'scientific_activity': float rate of science activity
                 on scopus platform by program name
+            'curriculum_relevance_score': float result relevance score
+            'avg_region_salary_increase': float index means that how many times
+                the median salary is higher than the
+                average salary in the region
         }
     """
     request_data = request.get_json()
@@ -37,9 +57,46 @@ def server_inference():
 
     publications_count = scopus_papers_count_estimator(scopus_topics)
 
+    main_maker_topics = scopus_person_subjects_estimator(
+        request_data['maker'],
+        request_data['university']
+    )
+
+    useful_person = useful_person_for_subjects(
+        main_maker_topics[1],
+        scopus_topics
+    )
+
+    degree_score = degree_map[request_data['maker_science_degree']] / 2
+
+    job_quality = 0
+    offers = hh_database(request_data['competencies'])
+    avg_region_salary_increase = 0
+
+    if len(offers) > 0:
+        salary_median = np.median(
+            np.array(
+                [offer['avg_salary'] for offer in offers]
+            )
+        )
+        offers_count = np.array(
+            [offer['offers_count'] for offer in offers]
+        ).mean()
+
+        avg_region_salary_increase = salary_median / avg_rostov_salary
+
+        job_quality = avg_region_salary_increase + \
+                      5 * offers_count / hh_database.max_offers_count
+
+    curriculum_score = (
+           publications_count / 400 + useful_person + job_quality + degree_score
+    ) / 4
+
     return jsonify(
         {
-            'scientific_activity': publications_count / 500
+            'scientific_activity': publications_count / 900,
+            'curriculum_relevance_score': curriculum_score,
+            'avg_region_salary_increase': avg_region_salary_increase
         }
     )
 
