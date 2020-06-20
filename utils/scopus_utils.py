@@ -53,16 +53,17 @@ class ScopusScienceTopicSearch(object):
         result_topics = []
 
         for main_topic in self.topics_map.keys():
-            for tag in tags:
-                found_in_subtopics = False
-
-                for k, subtopic in enumerate(
-                        self.preprocess_topics_map[main_topic]):
+            for k, subtopic in enumerate(self.preprocess_topics_map[main_topic]):
+                # found_in_subtopics = False
+                added_value = [0, '']
+                for tag in tags:
                     if tag in subtopic:
-                        found_in_subtopics = True
-                        result_topics.append(
-                            main_topic + ',' + self.topics_map[main_topic][k]
-                        )
+                        # found_in_subtopics = True
+                        added_value[0] += 1
+                        added_value[1] = main_topic + ',' + self.topics_map[main_topic][k]
+
+                if added_value[0] > 0:
+                    result_topics.append(added_value)
 
                 # if not found_in_subtopics:
                 #     if tag in str(main_topic).lower():
@@ -71,4 +72,5 @@ class ScopusScienceTopicSearch(object):
                 #                 main_topic + ',' + subtopic
                 #             )
 
-        return result_topics
+        result_topics.sort(key=lambda x: x[0], reverse=True)
+        return [value[1] for value in result_topics]

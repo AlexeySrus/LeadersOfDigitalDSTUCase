@@ -13,11 +13,12 @@ class ScopusScienceTopicRelevance(object):
             executable_path='data/geckodriver'
         )
 
-    def __call__(self, input_topics: list) -> int:
+    def __call__(self, input_topics: list, top_k: int = 1) -> int:
         """
-
+        Get count of publication of input topics
         Args:
             input_topics: input topics from ScopusScienceTopicSearch class
+            top_k: search by first k elements in topics list
 
         Returns:
             Count of publications by this topic in previous year
@@ -25,8 +26,8 @@ class ScopusScienceTopicRelevance(object):
         count = 0
 
         analysing_topics = input_topics
-        if len(analysing_topics) > 5:
-            analysing_topics = analysing_topics[:5]
+        if len(analysing_topics) > top_k:
+            analysing_topics = analysing_topics[:top_k]
 
         for topic in analysing_topics:
             self.driver.get(
