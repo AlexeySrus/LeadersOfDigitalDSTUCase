@@ -1,10 +1,6 @@
 import time
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
 
 
 class ScopusScienceTopicRelevance(object):
@@ -28,7 +24,11 @@ class ScopusScienceTopicRelevance(object):
         """
         count = 0
 
-        for topic in input_topics:
+        analysing_topics = input_topics
+        if len(analysing_topics) > 5:
+            analysing_topics = analysing_topics[:5]
+
+        for topic in analysing_topics:
             self.driver.get(
                 'https://www.scopus.com/sources.uri'
             )
@@ -78,7 +78,7 @@ class ScopusScienceTopicRelevance(object):
                 item = self.driver.find_element_by_xpath(
                     '//*[@id=\"resultCount\"]'
                 )
-                value = item.text
+                value = item.text.replace(',', '')
                 count += int(value.split(' ')[0])
             except Exception as e:
                 print(e)
@@ -87,10 +87,16 @@ class ScopusScienceTopicRelevance(object):
 
 
 if __name__ == '__main__':
+    from utils.scopus_utils import ScopusScienceTopicSearch
+
+    sst = ScopusScienceTopicSearch()
+
     t = ScopusScienceTopicRelevance()
-    query = [
-        'Arts and Humanities,Language and Linguistics',
-        'Social Sciences,Linguistics and Language'
-    ]
+    query = sst(
+        'Практика по получению профессиональных умений и опыта профессиональной деятельности (педагогическая практика)',
+        ru=True
+    )
+
+    print(len(query))
 
     print('Total publications count: {}'.format(t(query)))

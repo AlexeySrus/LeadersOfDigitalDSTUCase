@@ -64,11 +64,11 @@ class ScopusScienceTopicSearch(object):
                             main_topic + ',' + self.topics_map[main_topic][k]
                         )
 
-                if not found_in_subtopics:
-                    if tag in str(main_topic).lower():
-                        for subtopic in self.topics_map[main_topic]:
-                            result_topics.append(
-                                main_topic + ',' + subtopic
-                            )
+                # if not found_in_subtopics:
+                #     if tag in str(main_topic).lower():
+                #         for subtopic in self.topics_map[main_topic]:
+                #             result_topics.append(
+                #                 main_topic + ',' + subtopic
+                #             )
 
         return result_topics
