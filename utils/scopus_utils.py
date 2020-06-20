@@ -1,7 +1,9 @@
 import yaml
+from googletrans import Translator
 
 
 class ScopusScienceTopicSearch(object):
+    """Mapping russian courses names to scopus classes"""
     def __init__(self, topics_map_path: str = 'sources/scopus_science_map.yml'):
         """
         Class constructor
@@ -19,17 +21,34 @@ class ScopusScienceTopicSearch(object):
             for main_topic in self.topics_map
         }
 
-    def __call__(self, input_topic: str):
+        self.translator = Translator()
+
+    def translate(self, russian_string: str) -> str:
+        """
+        Translate russian sentence to english
+        Args:
+            russian_string: string with sentence in russian
+
+        Returns:
+            string with sentence in english
+        """
+        return self.translator.translate(text=russian_string, src='ru').text
+
+    def __call__(self, input_topic: str, ru: bool = False) -> list:
         """
         Call method
         Args:
             input_topic: input topic description in english
+            ru: topic in russian
 
         Returns:
             List of strings with probability science themes from scopus list
             with follow format: `main topic,subtopic`
         """
-        tags = input_topic.lower().split(' ')
+        if ru:
+            tags = self.translate(input_topic).lower().split(' ')
+        else:
+            tags = input_topic.lower().split(' ')
 
         result_topics = []
 
