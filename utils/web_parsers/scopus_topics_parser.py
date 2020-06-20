@@ -91,15 +91,27 @@ class ScopusScienceTopicRelevance(object):
 
 if __name__ == '__main__':
     from utils.scopus_utils import ScopusScienceTopicSearch
+    from tqdm import tqdm
 
     sst = ScopusScienceTopicSearch()
-
     t = ScopusScienceTopicRelevance()
-    query = sst(
-        'Искусственный интеллект',
-        ru=True
-    )
 
-    print(len(query))
+    max_count = 0
 
-    print('Total publications count: {}'.format(t(query)))
+    for main_key in tqdm(sst.topics_map.keys()):
+        for subtopic in main_key:
+            count = t(['{},{}'.format(main_key, subtopic)])
+            if count > max_count:
+                max_count = count
+
+    print(max_count)
+
+    # t = ScopusScienceTopicRelevance()
+    # query = sst(
+    #     'Искусственный интеллект',
+    #     ru=True
+    # )
+    #
+    # print(len(query))
+    #
+    # print('Total publications count: {}'.format(t(query)))
