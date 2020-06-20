@@ -41,7 +41,7 @@ class ScopusScienceTopicRelevance(object):
             except Exception as e:
                 print(e)
 
-            time.sleep(1)
+            # time.sleep(1)
 
             try:
                 topic_enter = self.driver.find_element_by_xpath(
@@ -52,7 +52,7 @@ class ScopusScienceTopicRelevance(object):
             except Exception as e:
                 print(e)
 
-            time.sleep(1)
+            # time.sleep(1)
 
             try:
                 button = self.driver.find_element_by_xpath(
@@ -62,7 +62,7 @@ class ScopusScienceTopicRelevance(object):
             except Exception as e:
                 print(e)
 
-            time.sleep(1)
+            # time.sleep(1)
 
             try:
                 button = self.driver.find_element_by_xpath(
@@ -72,7 +72,7 @@ class ScopusScienceTopicRelevance(object):
             except Exception as e:
                 print(e)
 
-            time.sleep(1)
+            # time.sleep(1)
 
             try:
                 item = self.driver.find_element_by_xpath(
@@ -82,6 +82,8 @@ class ScopusScienceTopicRelevance(object):
                 count += int(value.split(' ')[0])
             except Exception as e:
                 print(e)
+
+            time.sleep(1)
 
         return count
 
