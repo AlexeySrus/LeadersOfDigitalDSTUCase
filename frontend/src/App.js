@@ -16,6 +16,10 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            'curriculum_relevance_score': '',
+            'scientific_activity': '',
+            'avg_region_salary_increase': '',
+            'top_5_job_fields': '',
             polarity: undefined
         };
     };
@@ -80,10 +84,15 @@ class App extends Component {
                     </div>
                     <RaisedButton  label="Send" style={style} onClick={this.analyzeSentence.bind(this)}/>
                     {polarityComponent}
-                    <div className="content">
-                        <TextField ref={ref => this.textField5 = ref} onKeyUp={this.onEnterPress.bind(this)}
-                                   hintText={JSON.stringify(this.state,null, 4)}/>
-                    </div>
+                    {/*<div className="content">*/}
+                    {/*    <h1>Result: {JSON.stringify(this.state,null, 4)}</h1>*/}
+                        <h3>Степень качества образовательной программы: {this.state['curriculum_relevance_score']}</h3>
+                        <h3>Степень научной активности: {this.state['scientific_activity']}</h3>
+                        <h3>Отношение зарплаты к средней по региону: {this.state['avg_region_salary_increase']}</h3>
+                        <h3>Топ 5 специализаций для выпускника: <br></br>{JSON.stringify(this.state['top_5_job_fields'],null, 4)}</h3>
+                        {/*<TextField ref={ref => this.textField5 = ref} onKeyUp={this.onEnterPress.bind(this)}*/}
+                        {/*           hintText={JSON.stringify(this.state,null, 4)}/>*/}
+                    {/*</div>*/}
                         </Paper>
                     </List>
             </MuiThemeProvider>

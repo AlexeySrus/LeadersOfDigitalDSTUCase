@@ -99,6 +99,7 @@ def server_inference():
 
         job_quality = 0
         avg_region_salary_increase = 0
+        returned_offers = []
         if 'competencies' in request_data.keys() and \
                 len(request_data['competencies']) > 0:
             offers = hh_database(request_data['competencies'].split(';'))
@@ -121,6 +122,11 @@ def server_inference():
 
                 k += 1
 
+                offers.sort(key=lambda x: x['avg_salary'], reverse=True)
+                if len(offers) > 5:
+                    offers = offers[:5]
+                returned_offers = [o['name'] for o in offers]
+
         curriculum_score = (
                publications_count / 400 + useful_person + job_quality + degree_score
         ) / k
@@ -132,7 +138,8 @@ def server_inference():
         {
             'scientific_activity': float("{:.2f}".format(publications_count / 900)),
             'curriculum_relevance_score': float("{:.2f}".format(curriculum_score)),
-            'avg_region_salary_increase': float("{:.2f}".format(avg_region_salary_increase))
+            'avg_region_salary_increase': float("{:.2f}".format(avg_region_salary_increase)),
+            'top_5_job_fields': returned_offers
         }
     )
 
