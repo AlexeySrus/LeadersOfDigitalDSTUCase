@@ -71,28 +71,36 @@ def server_inference():
             ru=True
         )
 
+        k = 1
+
         publications_count = scopus_papers_count_estimator(scopus_topics)
 
         useful_person = False
         if 'maker' in request_data.keys() and \
                 'university' in request_data.keys():
-            main_maker_topics = scopus_person_subjects_estimator(
-                request_data['maker'],
-                request_data['university']
-            )
+            if len(request_data['maker']) > 0 and \
+                    len(request_data['university']) > 0:
+                main_maker_topics = scopus_person_subjects_estimator(
+                    request_data['maker'],
+                    request_data['university']
+                )
 
-            useful_person = useful_person_for_subjects(
-                main_maker_topics[1],
-                scopus_topics
-            )
+                useful_person = useful_person_for_subjects(
+                    main_maker_topics[1],
+                    scopus_topics
+                )
 
+                k += 2
+
+        degree_score = 0
         if 'maker_science_degree' in request_data.keys():
-            degree_score = degree_map[request_data['maker_science_degree']] / 2
-        else:
-            degree_score = 0
+            if len(request_data['maker_science_degree']) > 0:
+                degree_score = degree_map[request_data['maker_science_degree']] / 2
 
         job_quality = 0
-        if 'competencies' in request_data.keys():
+        avg_region_salary_increase = 0
+        if 'competencies' in request_data.keys() and \
+                len(request_data['competencies']) > 0:
             offers = hh_database(request_data['competencies'].split(';'))
             avg_region_salary_increase = 0
 
@@ -111,9 +119,11 @@ def server_inference():
                 job_quality = avg_region_salary_increase + \
                               5 * offers_count / hh_database.max_offers_count
 
+                k += 1
+
         curriculum_score = (
                publications_count / 400 + useful_person + job_quality + degree_score
-        ) / 4
+        ) / k
     except Exception as e:
         print(e)
         abort(401)
