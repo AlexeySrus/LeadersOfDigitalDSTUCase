@@ -38,7 +38,10 @@ class HHDatabase(object):
         for field in list(self.db.keys()):
             scores = []
             for competence in eng_competencies:
-                for req in self.db[field]['requirements']:
+                sequence = self.db[field]['requirements']
+                if len(sequence) > 15:
+                    sequence = sequence[:15]
+                for req in sequence:
                     score = self.text_similarity_estimator(
                         competence, req
                     )
