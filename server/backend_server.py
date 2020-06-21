@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request, abort
 from argparse import ArgumentParser
+import json
 import re
+import os
 import numpy as np
 from flask_cors import CORS
 
@@ -25,6 +27,13 @@ degree_map = {
     'кандидат наук': 1,
     'доктор наук': 2,
 }
+
+
+total_n = 1
+logs = {'log': []}
+if os.path.isfile('data/logs.json'):
+    with open('data/logs.json', 'r') as jf:
+        logs = json.load(jf)
 
 
 @app.route('/api/test', methods=['POST'])
@@ -63,9 +72,10 @@ def server_inference():
             'status': node for frontend
         }
     """
-    try:
-        request_data = request.get_json()
+    global  total_n
+    request_data = request.get_json()
 
+    try:
         scopus_topics = scopus_topics_estimator(
             request_data['program_name'],
             ru=True
@@ -132,16 +142,37 @@ def server_inference():
         ) / k
     except Exception as e:
         print(e)
+        logs['log'].append(
+            {
+                'input': request_data,
+                'output': '401'
+            }
+        )
+        with open('data/logs.json', 'w') as jf:
+            json.dump(logs, jf, indent=4, ensure_ascii=False)
         abort(401)
 
-    return jsonify(
+    result = {
+        'scientific_activity': float("{:.2f}".format(publications_count / 900)),
+        'curriculum_relevance_score': float("{:.2f}".format(curriculum_score)),
+        'avg_region_salary_increase': float("{:.2f}".format(avg_region_salary_increase)),
+        'top_5_job_fields': returned_offers
+    }
+
+    logs['log'].append(
         {
-            'scientific_activity': float("{:.2f}".format(publications_count / 900)),
-            'curriculum_relevance_score': float("{:.2f}".format(curriculum_score)),
-            'avg_region_salary_increase': float("{:.2f}".format(avg_region_salary_increase)),
-            'top_5_job_fields': returned_offers
+            'input': request_data,
+            'output': result
         }
     )
+
+    if total_n % 5 == 0:
+        with open('data/logs.json', 'w') as jf:
+            json.dump(logs, jf, indent=4, ensure_ascii=False)
+
+    total_n += 1
+
+    return jsonify(result)
 
 
 def args_parse():
