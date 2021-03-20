@@ -24,7 +24,7 @@ hyperframe==5.2.0
 idna==2.6
 immutables==0.14
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 jmespath==0.10.0
 joblib==0.15.1
 keyring==10.6.0
