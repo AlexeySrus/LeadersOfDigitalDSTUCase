@@ -11,7 +11,7 @@ cryptography==2.1.4
 distro-info===0.18ubuntu0.18.04.1
 docutils==0.15.2
 Flask==1.1.2
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 gensim==3.8.3
 googletrans==3.0.0
 h11==0.9.0
