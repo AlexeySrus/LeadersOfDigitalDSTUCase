@@ -33,7 +33,7 @@ language-selector==0.1
 MarkupSafe==1.1.1
 netifaces==0.10.4
 nltk==3.5
-numpy==1.19.0git
+numpy==1.22.0
 pycrypto==2.6.1
 pygobject==3.26.1
 python-apt==1.6.5+ubuntu0.3
