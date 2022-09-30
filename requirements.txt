@@ -26,7 +26,7 @@ immutables==0.14
 itsdangerous==1.1.0
 Jinja2==2.11.2
 jmespath==0.10.0
-joblib==0.15.1
+joblib==1.2.0
 keyring==10.6.0
 keyrings.alt==3.0
 language-selector==0.1
